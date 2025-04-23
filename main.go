@@ -8,5 +8,6 @@ func main() {
 	// operator()
 	// seleksiKondisi()
 	// perulangan()
-	array()
+	// array()
+    slice()
 }

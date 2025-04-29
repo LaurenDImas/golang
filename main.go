@@ -9,5 +9,8 @@ func main() {
 	// seleksiKondisi()
 	// perulangan()
 	// array()
-    slice()
+	// slice()1
+	// funtionParameter()
+	// pointer()
+	structObj()
 }

@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"reflect"
+	"strconv"
+	"strings"
 )
 
 type studentReflect struct {
@@ -12,6 +14,7 @@ type studentReflect struct {
 
 func (s *studentReflect) getPropertyInfo() {
 	var reflectValue = reflect.ValueOf(s)
+
 	if reflectValue.Kind() == reflect.Ptr {
 		reflectValue = reflectValue.Elem()
 	}
@@ -30,7 +33,68 @@ func (s *studentReflect) SetName(name string) {
 	s.Name = name
 }
 
+type User struct {
+	Name  string `validate:"required"`
+	Email string `validate:"required,email"`
+	Age   int    `validate:"min=18"`
+}
+
+func validateStruct(s interface{}) []string {
+	var errs []string
+	v := reflect.ValueOf(s)
+	t := reflect.TypeOf(s)
+
+	if v.Kind() != reflect.Struct {
+		return []string{"input must be a struct"}
+	}
+
+	for i := 0; i < v.NumField(); i++ {
+		field := v.Field(i)
+		tag := t.Field(i).Tag.Get("validate")
+		fieldName := t.Field(i).Name
+		// fmt.Println(field, tag, fieldName)
+		rules := strings.Split(tag, ",")
+
+		for _, rule := range rules {
+			switch {
+			case rule == "required":
+				if field.Kind() == reflect.String && field.String() == "" {
+					errs = append(errs, fieldName+" is required")
+				}
+			case rule == "email":
+				if !strings.Contains(field.String(), "@") {
+					errs = append(errs, fieldName+" must be a valid email")
+				}
+			case strings.HasPrefix(rule, "min="):
+				minVal, _ := strconv.Atoi(strings.TrimPrefix(rule, "min="))
+				if field.Kind() == reflect.Int && int(field.Int()) < minVal {
+					errs = append(errs, fmt.Sprintf("%s must be at least %d", fieldName, minVal))
+				}
+			}
+		}
+	}
+
+	return errs
+}
+
 func reflects() {
+	var user = User{
+		Name:  "",
+		Email: "inisalahemail",
+		Age:   12,
+	}
+
+	errors := validateStruct(user)
+
+	if len(errors) > 0 {
+		fmt.Println("Validation errors:")
+		for _, err := range errors {
+			fmt.Println("-", err)
+		}
+	} else {
+		fmt.Println("Validation passed")
+	}
+
 	// var number = 23
 	// var reflectValue = reflect.ValueOf(number)
 	// fmt.Println("tipe variable :", reflectValue.Type())

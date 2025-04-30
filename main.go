@@ -12,5 +12,9 @@ func main() {
 	// slice()1
 	// funtionParameter()
 	// pointer()
-	structObj()
+	// structObj()
+	// method()
+	// property() // public/private
+	// interfaces()
+	reflects()
 }

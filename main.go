@@ -16,5 +16,8 @@ func main() {
 	// method()
 	// property() // public/private
 	// interfaces()
-	reflects()
+	// reflects()
+	// concurency()
+	// channel()
+	buffer()
 }
